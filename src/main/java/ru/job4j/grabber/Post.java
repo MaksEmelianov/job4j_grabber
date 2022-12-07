@@ -6,7 +6,7 @@ import java.util.StringJoiner;
 
 public class Post {
 
-    private final int id;
+    private int id;
     private final String title;
     private final String link;
     private final String description;
@@ -20,6 +20,37 @@ public class Post {
         this.created = created;
     }
 
+    public Post(String title, String link, String description, LocalDateTime created) {
+        this.title = title;
+        this.link = link;
+        this.description = description;
+        this.created = created;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public LocalDateTime getCreated() {
+        return created;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -30,13 +61,12 @@ public class Post {
         }
         Post post = (Post) o;
         return id == post.id
-                && link.equals(post.link)
-                && description.equals(post.description);
+                && link.equals(post.link);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, link, description);
+        return Objects.hash(id, link);
     }
 
     @Override
