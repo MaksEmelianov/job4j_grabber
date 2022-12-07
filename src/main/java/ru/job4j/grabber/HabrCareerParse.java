@@ -21,7 +21,6 @@ public class HabrCareerParse {
     public static final int V_COUNT = 1;
     public static int countVacancy = 1;
 
-
     public static void main(String[] args) throws IOException {
         List<Elements> rows = new ArrayList<>();
         for (int i = 1; i <= PAGE_COUNT; i++) {
