@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 
 import static org.quartz.JobBuilder.newJob;
@@ -17,50 +15,48 @@ import static org.quartz.TriggerBuilder.newTrigger;
 
 public class AlertRabbit {
 
-    private static final Properties CONFIG = getConfig();
-
     public static void main(String[] args) {
         try {
-            Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
-            scheduler.start();
-            JobDataMap data = new JobDataMap();
-            data.put("store", getConnect());
-            JobDetail job = newJob(Rabbit.class)
-                    .usingJobData(data)
-                    .build();
-            SimpleScheduleBuilder timer = simpleSchedule()
-                    .withIntervalInSeconds(Integer.parseInt(CONFIG.getProperty("rabbit.interval")))
-                    .repeatForever();
-            Trigger trigger = newTrigger()
-                    .startNow()
-                    .withSchedule(timer)
-                    .build();
-            scheduler.scheduleJob(job, trigger);
-            Thread.sleep(10000);
-            scheduler.shutdown();
-        } catch (SchedulerException
-                 | InterruptedException
-                 | ClassNotFoundException
-                 | SQLException e) {
+            Properties config = getConfig();
+            try (Connection connect = getConnect(config)) {
+                Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
+                scheduler.start();
+                JobDataMap data = new JobDataMap();
+                data.put("store", connect);
+                JobDetail job = newJob(Rabbit.class)
+                        .usingJobData(data)
+                        .build();
+                SimpleScheduleBuilder timer = simpleSchedule()
+                        .withIntervalInSeconds(Integer.parseInt(config.getProperty("rabbit.interval")))
+                        .repeatForever();
+                Trigger trigger = newTrigger()
+                        .startNow()
+                        .withSchedule(timer)
+                        .build();
+                scheduler.scheduleJob(job, trigger);
+                Thread.sleep(10000);
+                scheduler.shutdown();
+            } catch (SQLException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        } catch (SchedulerException | InterruptedException | IOException e) {
             e.printStackTrace();
         }
     }
 
-    private static Connection getConnect() throws ClassNotFoundException, SQLException {
-        Class.forName(CONFIG.getProperty("driver_class"));
+    private static Connection getConnect(Properties config) throws ClassNotFoundException, SQLException {
+        Class.forName(config.getProperty("driver_class"));
         return DriverManager.getConnection(
-                        CONFIG.getProperty("url"),
-                        CONFIG.getProperty("username"),
-                        CONFIG.getProperty("password"));
+                config.getProperty("url"),
+                config.getProperty("username"),
+                config.getProperty("password"));
     }
 
-    private static Properties getConfig() {
+    private static Properties getConfig() throws IOException {
         Properties config = new Properties();
         try (InputStream in = AlertRabbit.class
                 .getClassLoader().getResourceAsStream("rabbit.properties")) {
             config.load(in);
-        } catch (IOException e) {
-            e.printStackTrace();
         }
         return config;
     }
