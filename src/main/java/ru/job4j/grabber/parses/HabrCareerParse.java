@@ -1,10 +1,11 @@
-package ru.job4j.grabber;
+package ru.job4j.grabber.parses;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import ru.job4j.grabber.Post;
 import ru.job4j.grabber.utils.DateTimeParser;
 
 import java.io.IOException;
@@ -18,7 +19,7 @@ public class HabrCareerParse implements Parse {
     public static final String PAGE_GET = "?page=";
     public static final String PAGE_LINK = String.format("%s/vacancies/java_developer", SOURCE_LINK);
     public static final int PAGE_COUNT = 1;
-    public static final int LIMIT = 1;
+    public static final int LIMIT = 15;
     private final DateTimeParser dateTimeParser;
 
     public HabrCareerParse(DateTimeParser dateTimeParser) {
