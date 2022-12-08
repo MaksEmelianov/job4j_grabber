@@ -7,21 +7,23 @@ import java.util.List;
 
 public class MemStore implements Store {
 
-    List<Post> posts = new ArrayList<>();
+    private final List<Post> posts = new ArrayList<>();
+    private int ids = 1;
 
     @Override
     public void save(Post post) {
+        post.setId(ids++);
         posts.add(post);
     }
 
     @Override
     public List<Post> getAll() {
-        return posts;
+        return List.copyOf(posts);
     }
 
     @Override
     public Post findById(int id) {
-        return posts.get(id - 1);
+        return posts.get(id);
     }
 
     @Override
