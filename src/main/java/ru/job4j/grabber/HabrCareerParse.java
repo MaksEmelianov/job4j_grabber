@@ -6,7 +6,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import ru.job4j.grabber.utils.DateTimeParser;
-import ru.job4j.grabber.utils.HabrCareerDateTimeParser;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -19,18 +18,11 @@ public class HabrCareerParse implements Parse {
     public static final String PAGE_GET = "?page=";
     public static final String PAGE_LINK = String.format("%s/vacancies/java_developer", SOURCE_LINK);
     public static final int PAGE_COUNT = 1;
-    public static final int V_COUNT = 1;
-    public static int numVacancy = 1;
+    public static final int LIMIT = 1;
     private final DateTimeParser dateTimeParser;
 
     public HabrCareerParse(DateTimeParser dateTimeParser) {
         this.dateTimeParser = dateTimeParser;
-    }
-
-    public static void main(String[] args) throws IOException {
-        HabrCareerParse habrCareerParse = new HabrCareerParse(new HabrCareerDateTimeParser());
-        List<Post> posts = habrCareerParse.list(PAGE_LINK);
-        System.out.println(posts);
     }
 
     private static String retrieveDescription(String link) throws IOException {
@@ -49,7 +41,7 @@ public class HabrCareerParse implements Parse {
             Document document = connection.get();
             Elements elsFromOnePage = document.select(".vacancy-card__inner");
             elsFromOnePage.stream()
-                    .limit(V_COUNT)
+                    .limit(LIMIT)
                     .forEach(row -> addDataInList(row, posts));
         }
         return posts;
@@ -71,7 +63,6 @@ public class HabrCareerParse implements Parse {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        posts.add(new Post(numVacancy, title, link, desc, date));
-        numVacancy++;
+        posts.add(new Post(title, link, desc, date));
     }
 }

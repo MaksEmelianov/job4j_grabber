@@ -21,4 +21,11 @@ public class MemStore implements Store {
     public Post findById(int id) {
         return posts.get(id - 1);
     }
+
+    @Override
+    public void close() {
+        if (!posts.isEmpty()) {
+            posts.clear();
+        }
+    }
 }
