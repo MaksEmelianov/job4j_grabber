@@ -19,19 +19,22 @@ public class HabrCareerParse implements Parse {
     public static final String PAGE_GET = "?page=";
     public static final String PAGE_LINK = String.format("%s/vacancies/java_developer", SOURCE_LINK);
     public static final int PAGE_COUNT = 1;
-    public static final int LIMIT = 15;
+    public static final int LIMIT = 1;
     private final DateTimeParser dateTimeParser;
 
     public HabrCareerParse(DateTimeParser dateTimeParser) {
         this.dateTimeParser = dateTimeParser;
     }
 
-    private static String retrieveDescription(String link) throws IOException {
-        return Jsoup.connect(link)
-                .get()
-                .select(".vacancy-description__text")
-                .first()
-                .text();
+    private String retrieveDescription(String link) {
+        String desc = null;
+        try {
+            desc = Jsoup.connect(link).get()
+                    .select(".vacancy-description__text").first().text();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return desc;
     }
 
     @Override
@@ -59,11 +62,7 @@ public class HabrCareerParse implements Parse {
                 .attr("datetime"));
         String link = String.format("%s%s", SOURCE_LINK, linkElement.attr("href"));
         String desc = null;
-        try {
-            desc = retrieveDescription(link);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        desc = retrieveDescription(link);
         posts.add(new Post(title, link, desc, date));
     }
 }
