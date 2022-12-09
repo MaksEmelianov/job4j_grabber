@@ -17,6 +17,7 @@ public class HabrCareerParse implements Parse {
 
     public static final String SOURCE_LINK = "https://career.habr.com";
     public static final String FULL_LINK = String.format("%s/vacancies/java_developer?page=", SOURCE_LINK);
+    public static final int PAGE_COUNT = 5;
     private final DateTimeParser dateTimeParser;
 
     public HabrCareerParse(DateTimeParser dateTimeParser) {
@@ -35,15 +36,19 @@ public class HabrCareerParse implements Parse {
     }
 
     @Override
-    public List<Post> list(String link) throws IOException {
+    public List<Post> list(String link) {
         List<Post> posts = new ArrayList<>();
-        for (int i = 1; i <= 5; i++) {
-            Connection connection = Jsoup.connect(String.format("%s%s", link, i));
-            Document document = connection.get();
-            Elements elsFromOnePage = document.select(".vacancy-card__inner");
-            elsFromOnePage.stream()
-                    .map(this::getPost)
-                    .forEach(posts::add);
+        try {
+            for (int i = 1; i <= PAGE_COUNT; i++) {
+                Connection connection = Jsoup.connect(String.format("%s%s", link, i));
+                Document document = connection.get();
+                Elements elsFromOnePage = document.select(".vacancy-card__inner");
+                elsFromOnePage.stream()
+                        .map(this::getPost)
+                        .forEach(posts::add);
+            }
+        } catch (IOException io) {
+            throw new IllegalArgumentException("Error in adding posts in list");
         }
         return posts;
     }

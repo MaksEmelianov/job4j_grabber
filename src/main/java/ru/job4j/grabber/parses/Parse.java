@@ -7,5 +7,5 @@ import java.util.List;
 
 @FunctionalInterface
 public interface Parse {
-    List<Post> list(String link) throws IOException;
+    List<Post> list(String link);
 }

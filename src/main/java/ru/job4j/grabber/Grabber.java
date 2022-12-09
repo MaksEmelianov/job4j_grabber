@@ -65,12 +65,8 @@ public class Grabber implements Grab {
             JobDataMap data = context.getJobDetail().getJobDataMap();
             Store store = (Store) data.get("store");
             Parse parse = (Parse) data.get("parse");
-            try {
-                List<Post> posts = parse.list(HabrCareerParse.FULL_LINK);
-                posts.forEach(store::save);
-            } catch (IOException e) {
-                throw new IllegalArgumentException("Error in adding posts in list");
-            }
+            List<Post> posts = parse.list(HabrCareerParse.FULL_LINK);
+            posts.forEach(store::save);
         }
     }
 
