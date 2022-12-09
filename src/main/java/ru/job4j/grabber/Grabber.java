@@ -66,20 +66,26 @@ public class Grabber implements Grab {
             Store store = (Store) data.get("store");
             Parse parse = (Parse) data.get("parse");
             try {
-                List<Post> posts = parse.list(HabrCareerParse.PAGE_LINK);
+                List<Post> posts = parse.list(HabrCareerParse.FULL_LINK);
                 posts.forEach(store::save);
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new IllegalArgumentException("Error in adding posts in list");
             }
         }
     }
 
-    public static void main(String[] args) throws IOException, SchedulerException {
-        Grabber grabber = new Grabber();
-        grabber.config();
-        Scheduler scheduler = grabber.scheduler();
-        Store store = grabber.store();
-        Parse parse = grabber.parse();
-        grabber.init(parse, store, scheduler);
+    public static void main(String[] args) {
+        try {
+            Grabber grabber = new Grabber();
+            grabber.config();
+            Scheduler scheduler = grabber.scheduler();
+            Store store = grabber.store();
+            Parse parse = grabber.parse();
+            grabber.init(parse, store, scheduler);
+        } catch (IOException ioException) {
+            throw new IllegalArgumentException("Error in getting config");
+        } catch (SchedulerException e) {
+            throw new IllegalArgumentException("Error in running scheduler");
+        }
     }
 }

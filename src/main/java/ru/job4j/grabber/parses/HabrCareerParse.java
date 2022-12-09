@@ -16,10 +16,7 @@ import java.util.List;
 public class HabrCareerParse implements Parse {
 
     public static final String SOURCE_LINK = "https://career.habr.com";
-    public static final String PAGE_GET = "?page=";
-    public static final String PAGE_LINK = String.format("%s/vacancies/java_developer", SOURCE_LINK);
-    public static final int PAGE_COUNT = 1;
-    public static final int LIMIT = 1;
+    public static final String FULL_LINK = String.format("%s/vacancies/java_developer?page=", SOURCE_LINK);
     private final DateTimeParser dateTimeParser;
 
     public HabrCareerParse(DateTimeParser dateTimeParser) {
@@ -27,12 +24,12 @@ public class HabrCareerParse implements Parse {
     }
 
     private String retrieveDescription(String link) {
-        String desc = null;
+        String desc;
         try {
             desc = Jsoup.connect(link).get()
                     .select(".vacancy-description__text").first().text();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IllegalArgumentException("Error in getting the description");
         }
         return desc;
     }
@@ -40,18 +37,18 @@ public class HabrCareerParse implements Parse {
     @Override
     public List<Post> list(String link) throws IOException {
         List<Post> posts = new ArrayList<>();
-        for (int i = 1; i <= PAGE_COUNT; i++) {
-            Connection connection = Jsoup.connect(String.format("%s%s%s", link, PAGE_GET, i));
+        for (int i = 1; i <= 5; i++) {
+            Connection connection = Jsoup.connect(String.format("%s%s", link, i));
             Document document = connection.get();
             Elements elsFromOnePage = document.select(".vacancy-card__inner");
             elsFromOnePage.stream()
-                    .limit(LIMIT)
-                    .forEach(row -> addDataInList(row, posts));
+                    .map(this::getPost)
+                    .forEach(posts::add);
         }
         return posts;
     }
 
-    private void addDataInList(Element row, List<Post> posts) {
+    private Post getPost(Element row) {
         Element linkElement = row.select(".vacancy-card__title")
                 .first()
                 .child(0);
@@ -61,8 +58,7 @@ public class HabrCareerParse implements Parse {
                 .child(0)
                 .attr("datetime"));
         String link = String.format("%s%s", SOURCE_LINK, linkElement.attr("href"));
-        String desc = null;
-        desc = retrieveDescription(link);
-        posts.add(new Post(title, link, desc, date));
+        String desc = retrieveDescription(link);
+        return new Post(title, link, desc, date);
     }
 }

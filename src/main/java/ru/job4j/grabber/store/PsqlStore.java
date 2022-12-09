@@ -41,7 +41,7 @@ public class PsqlStore implements Store {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new IllegalStateException("Error execution sql request in Save method");
         }
     }
 
@@ -63,7 +63,7 @@ public class PsqlStore implements Store {
                 posts.add(getPost(rs));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new IllegalStateException("Error execution sql request in getAll method");
         }
         return posts;
     }
@@ -79,7 +79,7 @@ public class PsqlStore implements Store {
                 post = getPost(rs);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new IllegalStateException("Error execution sql request in findById method");
         }
         return post;
     }
