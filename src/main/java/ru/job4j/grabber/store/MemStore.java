@@ -23,7 +23,14 @@ public class MemStore implements Store {
 
     @Override
     public Post findById(int id) {
-        return posts.get(id);
+        Post result = null;
+        for (var post : posts) {
+            if (post.getId() == id) {
+                result = post;
+                break;
+            }
+        }
+        return result;
     }
 
     @Override
