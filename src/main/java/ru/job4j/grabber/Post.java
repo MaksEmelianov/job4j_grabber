@@ -7,22 +7,22 @@ import java.util.StringJoiner;
 public class Post {
 
     private int id;
-    private final String title;
     private final String link;
+    private final String title;
     private final String description;
     private final LocalDateTime created;
 
-    public Post(int id, String title, String link, String description, LocalDateTime created) {
-        this.id = id;
-        this.title = title;
+    public Post(String link, String title, String description, LocalDateTime created) {
         this.link = link;
+        this.title = title;
         this.description = description;
         this.created = created;
     }
 
-    public Post(String title, String link, String description, LocalDateTime created) {
-        this.title = title;
+    public Post(int id, String link, String title, String description, LocalDateTime created) {
+        this.id = id;
         this.link = link;
+        this.title = title;
         this.description = description;
         this.created = created;
     }
