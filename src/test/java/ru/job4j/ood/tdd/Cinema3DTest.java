@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.Calendar;
 import java.util.List;
@@ -102,5 +103,14 @@ public class Cinema3DTest {
         Cinema cinema = new Cinema3D();
         assertThatThrownBy(() -> cinema.buy(account, 1, 1, null)).
                 isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    public void whenBuyOccupiedPlaceThenGetException() {
+        Account account = new AccountCinema();
+        Cinema cinema = new Cinema3D();
+        Calendar date = Calendar.getInstance();
+        assertThatThrownBy(() -> cinema.buy(account, 1, 1, date))
+                .isInstanceOf(IllegalStateException.class);
     }
 }
